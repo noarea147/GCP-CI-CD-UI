@@ -7,7 +7,7 @@ import { LOGIN } from '../../shared/Apis';
 @Injectable({
   providedIn: 'root',
 })
-export class loginService {
+export class LoginService {
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string): Observable<any> {
