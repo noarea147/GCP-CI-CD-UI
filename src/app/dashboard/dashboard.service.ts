@@ -2,7 +2,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { APP_SERVER_URL } from '../../shared/appBaseUrl';
-import { CONFIGURE_SERVICE_ACCOUNT } from '../../shared/Apis';
+import {
+  CONFIGURE_SERVICE_ACCOUNT,
+  GET_VIRTUEL_MACHINES,
+  HOST_VIRTUEL_MACHINE,
+  LIST_VIRTUEL_MACHINES,
+} from '../../shared/Apis';
 
 @Injectable({
   providedIn: 'root',
@@ -21,5 +26,40 @@ export class DashboardService {
       'Content-Type': 'application/json',
     });
     return this.http.post<any>(endpoint, body, { headers });
+  }
+
+  listServiceAccountVirtuelMachines(accessToken: string): Observable<any> {
+    const endpoint = APP_SERVER_URL + LIST_VIRTUEL_MACHINES;
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    });
+    return this.http.post<any>(endpoint, {}, { headers });
+  }
+
+  hostVirtuelMachine(
+    accessToken: string,
+    vmIp: string,
+    subdomain: string
+  ): Observable<any> {
+    const endpoint = APP_SERVER_URL + HOST_VIRTUEL_MACHINE;
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    });
+    return this.http.post<any>(
+      endpoint,
+      { vmIp: vmIp, subdomain: subdomain },
+      { headers }
+    );
+  }
+
+  getAllHostedVirtuelMachines(accessToken: string): Observable<any> {
+    const endpoint = APP_SERVER_URL + GET_VIRTUEL_MACHINES;
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    });
+    return this.http.post<any>(endpoint, {}, { headers });
   }
 }

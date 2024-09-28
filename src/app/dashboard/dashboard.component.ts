@@ -7,11 +7,28 @@ import { SideBarComponent } from '../side-bar/side-bar.component';
 import { DashboardService } from './dashboard.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ExtractZonePipe } from './pipe/extract-zone.pipe';
+
+interface VmInstance {
+  name: string;
+  zone: string;
+  status: string;
+  networkInterfaces: Array<{
+    accessConfigs: Array<{
+      natIP: string;
+    }>;
+  }>;
+}
+
+interface HostedVm {
+  hostedVm: string;
+  url: string;
+}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [SideBarComponent, CommonModule],
+  imports: [SideBarComponent, CommonModule, ExtractZonePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -25,11 +42,14 @@ export class DashboardComponent {
   accessToken = '';
   serviceAccountJson: object | null = null;
   errorMessage: string | null = null;
+  hostErrorMessage: string | null = null;
   message: string | null = null;
   loading = false;
   isConfigured = false;
   host = false;
-
+  ipToHost = '';
+  vms: VmInstance[] = [];
+  hostedVms: HostedVm[] = [];
   constructor(
     private router: Router,
     private dashboardService: DashboardService
@@ -43,6 +63,31 @@ export class DashboardComponent {
         this.router.navigate(['/']);
       }
       this.isConfigured = JSON.parse(this.currentUser as string).isConfigured;
+      this.dashboardService
+        .getAllHostedVirtuelMachines(this.accessToken)
+        .subscribe({
+          next: (response) => {
+            this.hostedVms = response;
+            console.log(response);
+          },
+          error: (error) => {
+            console.error('List failed', error);
+            this.errorMessage = 'List failed. Somthing went wrong !';
+            this.loading = false;
+          },
+        });
+      this.dashboardService
+        .listServiceAccountVirtuelMachines(this.accessToken)
+        .subscribe({
+          next: (response) => {
+            this.vms = response.vms;
+          },
+          error: (error) => {
+            console.error('List failed', error);
+            this.errorMessage = 'List failed. Somthing went wrong !';
+            this.loading = false;
+          },
+        });
     }
   }
 
@@ -73,6 +118,21 @@ export class DashboardComponent {
     }
   }
 
+  onHostVm(subdomain: string) {
+    this.dashboardService
+      .hostVirtuelMachine(this.accessToken, this.ipToHost, subdomain)
+      .subscribe({
+        next: (response) => {
+          if (response.message === 'Subdomain assigned successfully') {
+            this.host = false;
+          }
+          this.errorMessage = 'Something went wrong !';
+        },
+        error: (error) => {
+          this.errorMessage = 'Something went wrong !';
+        },
+      });
+  }
   showUploadInput() {
     this.isUnavailableVisible = false;
     this.isUploadVisible = true;
@@ -93,7 +153,8 @@ export class DashboardComponent {
     this.isAccountService = false;
   }
 
-  showHostModal() {
+  showHostModal(ip: string) {
+    this.ipToHost = ip;
     this.host = true;
   }
 
@@ -125,5 +186,16 @@ export class DashboardComponent {
       };
       reader.readAsText(file);
     }
+  }
+
+  isHosted(ip: string): boolean {
+    return this.hostedVms.some((hostedVm) => hostedVm.hostedVm === ip);
+  }
+
+  getVmUrl(ip: string): string | null {
+    const hostedVm = this.hostedVms.find(
+      (hostedVm) => hostedVm.hostedVm === ip
+    );
+    return hostedVm ? hostedVm.url : null;
   }
 }
