@@ -7,6 +7,7 @@ import {
   GET_VIRTUEL_MACHINES,
   HOST_VIRTUEL_MACHINE,
   LIST_VIRTUEL_MACHINES,
+  UNLINK_VIRTUEL_MACHINE,
 } from '../../shared/Apis';
 
 @Injectable({
@@ -52,6 +53,19 @@ export class DashboardService {
       { vmIp: vmIp, subdomain: subdomain },
       { headers }
     );
+  }
+
+  unlinkVirtuelMachine(
+    accessToken: string,
+    vmIp: string,
+    url: string
+  ): Observable<any> {
+    const endpoint = APP_SERVER_URL + UNLINK_VIRTUEL_MACHINE;
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    });
+    return this.http.post<any>(endpoint, { vmIp: vmIp, url: url }, { headers });
   }
 
   getAllHostedVirtuelMachines(accessToken: string): Observable<any> {

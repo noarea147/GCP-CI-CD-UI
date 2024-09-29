@@ -124,6 +124,10 @@ export class DashboardComponent {
       .subscribe({
         next: (response) => {
           if (response.message === 'Subdomain assigned successfully') {
+            this.hostedVms.push({
+              hostedVm: this.ipToHost,
+              url: `http://${subdomain}.example.com`,
+            });
             this.host = false;
           }
           this.errorMessage = 'Something went wrong !';
@@ -133,6 +137,27 @@ export class DashboardComponent {
         },
       });
   }
+
+  onUnlinkVm(vmIp: string) {
+    const url = this.getVmUrl(vmIp) as string;
+
+    this.dashboardService
+      .unlinkVirtuelMachine(this.accessToken, vmIp, url)
+      .subscribe({
+        next: (response) => {
+          if (response.message === 'Subdomain unlinked successfully') {
+            this.hostedVms = this.hostedVms.filter(
+              (vm) => vm.hostedVm !== vmIp
+            );
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Something went wrong!';
+          console.error('Unlink VM error:', error);
+        },
+      });
+  }
+
   showUploadInput() {
     this.isUnavailableVisible = false;
     this.isUploadVisible = true;
