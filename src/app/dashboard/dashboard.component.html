@@ -1,6 +1,6 @@
 <aside
   id="sidebar-multi-level-sidebar"
-  class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+  class="fixed top-0 left-0 z-9 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
   aria-label="Sidebar"
 >
   <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50">
@@ -153,7 +153,10 @@
           <span class="mt-2">We're working on it</span>
         </div>
       </div>
-      <div *ngIf="!loading" class="flex items-center justify-center w-full">
+      <div
+        *ngIf="!loading"
+        class="flex items-center justify-center w-full flex-col"
+      >
         <label
           for="dropzone-file"
           class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50"
@@ -192,6 +195,13 @@
             (change)="onFileSelected($event)"
           />
         </label>
+        <span
+          [class.hidden]="!isUploadVisible"
+          (click)="showTuto()"
+          class="cursor-pointer"
+        >
+          How to create service account .</span
+        >
       </div>
     </div>
     <div class="flex items-center justify-center mb-4 rounded bg-gray-50">
@@ -326,6 +336,197 @@
             Host
           </button>
         </center>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial MOdal  -->
+
+  <div
+    *ngIf="isShowTuto"
+    class="relative z-10"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-55 transition-opacity"
+      aria-hidden="true"
+    ></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full w-lg items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all"
+        >
+          <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="max-w-4xl mx-auto p-5">
+                <h1 class="text-3xl font-bold text-center mb-6">
+                  Creating a Google Cloud Platform Service Account and Obtaining
+                  the Service Account JSON Key File
+                </h1>
+                <hr class="mb-6" />
+
+                <h2 class="text-2xl font-semibold mb-4">
+                  Understanding Service Accounts
+                </h2>
+                <p class="mb-4">
+                  A service account is a special type of Google account that
+                  represents an application or a non-human user. It provides a
+                  way for applications to authenticate and access Google Cloud
+                  Platform resources without requiring human interaction.
+                </p>
+
+                <h2 class="text-2xl font-semibold mb-4">
+                  Creating a Service Account
+                </h2>
+
+                <h3 class="text-xl font-medium mb-2">
+                  Access the IAM & Admin page:
+                </h3>
+                <ol class="list-decimal list-inside mb-4">
+                  <li>Log in to your Google Cloud Platform console.</li>
+                  <li>Navigate to the IAM & Admin page.</li>
+                  <li>Select "Service accounts" from the left-hand menu.</li>
+                </ol>
+
+                <h3 class="text-xl font-medium mb-2">
+                  Create a new service account:
+                </h3>
+                <ol class="list-decimal list-inside mb-4">
+                  <li>Click the "Create" button.</li>
+                  <li>
+                    Give your service account a descriptive name (e.g.,
+                    "my-service-account").
+                  </li>
+                  <li>
+                    Choose the project where this service account will be used.
+                  </li>
+                  <li>Click "Create".</li>
+                </ol>
+
+                <h3 class="text-xl font-medium mb-2">
+                  Grant necessary permissions:
+                </h3>
+                <p class="mb-4">
+                  Once the service account is created, you'll need to grant it
+                  the appropriate permissions to access the resources it needs.
+                </p>
+                <ol class="list-decimal list-inside mb-4">
+                  <li>Click on the newly created service account.</li>
+                  <li>Go to the "Roles" tab.</li>
+                  <li>Click "Add" to assign roles.</li>
+                  <li>
+                    Choose the relevant roles based on the tasks your service
+                    account will perform (e.g., "Storage Object Admin" for
+                    accessing Cloud Storage).
+                  </li>
+                </ol>
+
+                <h2 class="text-2xl font-semibold mb-4">
+                  Obtaining the Service Account JSON Key File
+                </h2>
+
+                <h3 class="text-xl font-medium mb-2">Create a key:</h3>
+                <ol class="list-decimal list-inside mb-4">
+                  <li>Click on the "Keys" tab.</li>
+                  <li>Click "Add key".</li>
+                  <li>Choose "Create new key".</li>
+                  <li>Select "JSON" as the key type.</li>
+                  <li>Click "Create".</li>
+                  <li>A JSON file will be downloaded to your local machine.</li>
+                </ol>
+
+                <h3 class="text-xl font-medium mb-2">
+                  Store the key securely:
+                </h3>
+                <p class="mb-4">
+                  This JSON file contains sensitive credentials. It's crucial to
+                  store it securely to prevent unauthorized access. Consider
+                  using a secure password manager or encrypting the file.
+                </p>
+
+                <h2 class="text-2xl font-semibold mb-4">
+                  Using the Service Account JSON Key File
+                </h2>
+                <p class="mb-4">
+                  The JSON key file contains the credentials needed to
+                  authenticate your application as the service account. You'll
+                  typically use this file in your application's code to access
+                  Google Cloud Platform APIs.
+                </p>
+
+                <h3 class="text-xl font-medium mb-2">
+                  Example (using Python and the Google Cloud client library):
+                </h3>
+                Python
+                <pre class="bg-gray-100 p-4 rounded mb-4">
+<code>
+from google.cloud import storage
+
+# Replace 'path/to/your/key.json' with the actual path to your JSON file
+storage_client = storage.Client.from_service_account_json('path/to/your/key.json')
+bucket = storage_client.bucket('your-bucket-name')</code>
+                </pre>
+
+                <h2 class="text-2xl font-semibold mb-4">
+                  Additional Considerations
+                </h2>
+
+                <ul class="list-disc list-inside mb-4">
+                  <li>
+                    <b>Role-based access control:</b> Grant the service account
+                    only the necessary permissions to prevent unauthorized
+                    access.
+                  </li>
+                  <li>
+                    <b>Key rotation:</b> Regularly rotate the service account
+                    key to enhance security.
+                  </li>
+                  <li>
+                    <b>Service account impersonation:</b> If you need to
+                    temporarily act as a specific user, consider using service
+                    account impersonation.
+                  </li>
+                  <li>
+                    <b>IAM best practices:</b> Adhere to IAM best practices to
+                    maintain a secure environment.
+                  </li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold mb-4">Useful Resources</h2>
+                <ul class="list-disc list-inside">
+                  <li>
+                    <a
+                      href="https://cloud.google.com/iam/docs/service-account-overview"
+                      class="text-blue-500 hover:underline"
+                      >Google Cloud documentation</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="https://cloud.google.com/apis/docs/cloud-client-libraries"
+                      class="text-blue-500 hover:underline"
+                      >Google Cloud Client Libraries</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <button
+              (click)="showTuto()"
+              type="button"
+              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

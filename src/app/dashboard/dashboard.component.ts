@@ -48,6 +48,7 @@ export class DashboardComponent {
   isConfigured = false;
   host = false;
   ipToHost = '';
+  isShowTuto = false;
   vms: VmInstance[] = [];
   hostedVms: HostedVm[] = [];
   constructor(
@@ -68,12 +69,10 @@ export class DashboardComponent {
         .subscribe({
           next: (response) => {
             this.hostedVms = response;
-            console.log(response);
           },
           error: (error) => {
             console.error('List failed', error);
             this.errorMessage = 'List failed. Somthing went wrong !';
-            this.loading = false;
           },
         });
       this.dashboardService
@@ -85,21 +84,22 @@ export class DashboardComponent {
           error: (error) => {
             console.error('List failed', error);
             this.errorMessage = 'List failed. Somthing went wrong !';
-            this.loading = false;
           },
         });
     }
   }
 
+  showTuto() {
+    this.isShowTuto = !this.isShowTuto
+  }
+
   onConfigureServiceAccount() {
     if (this.serviceAccountJson) {
-      this.loading = true;
       this.dashboardService
         .configureServiceAccount(this.serviceAccountJson, this.accessToken)
         .subscribe({
           next: (response) => {
             this.message = response.message;
-            this.loading = false;
             if (
               response.message === 'Service account configured successfully'
             ) {
@@ -112,7 +112,6 @@ export class DashboardComponent {
             console.error('Login failed', error);
             this.errorMessage =
               'Login failed. Please check your credentials and try again.';
-            this.loading = false;
           },
         });
     }
