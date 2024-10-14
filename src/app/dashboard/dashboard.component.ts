@@ -48,6 +48,7 @@ export class DashboardComponent {
   isConfigured = false;
   host = false;
   ipToHost = '';
+  vmNameToHost = '';
   isShowTuto = false;
   vms: VmInstance[] = [];
   hostedVms: HostedVm[] = [];
@@ -90,7 +91,7 @@ export class DashboardComponent {
   }
 
   showTuto() {
-    this.isShowTuto = !this.isShowTuto
+    this.isShowTuto = !this.isShowTuto;
   }
 
   onConfigureServiceAccount() {
@@ -117,9 +118,31 @@ export class DashboardComponent {
     }
   }
 
-  onHostVm(subdomain: string) {
+  onStartVm(vmName: string) {
     this.dashboardService
-      .hostVirtuelMachine(this.accessToken, this.ipToHost, subdomain)
+      .startVirtuelMachine(vmName, this.accessToken)
+      .subscribe({
+        next: (response) => {
+          this.message = response.message;
+          console.log(this.message);
+        },
+        error: (error) => {
+          console.error('Login failed', error);
+          this.errorMessage =
+            'Login failed. Please check your credentials and try again.';
+        },
+      });
+  }
+
+  onHostVm(subdomain: string, port: string) {
+    this.dashboardService
+      .hostVirtuelMachine(
+        this.accessToken,
+        this.ipToHost,
+        subdomain,
+        port,
+        this.vmNameToHost
+      )
       .subscribe({
         next: (response) => {
           if (response.message === 'Subdomain assigned successfully') {
@@ -177,8 +200,9 @@ export class DashboardComponent {
     this.isAccountService = false;
   }
 
-  showHostModal(ip: string) {
+  showHostModal(ip: string, name: string) {
     this.ipToHost = ip;
+    this.vmNameToHost = name;
     this.host = true;
   }
 

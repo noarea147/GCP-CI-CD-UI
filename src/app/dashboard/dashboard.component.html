@@ -239,30 +239,50 @@
           <td class="px-6 py-4">{{ vm.zone | extractZone }}</td>
           <td class="px-6 py-4">{{ vm.status }}</td>
           <td class="px-6 py-4">
-            <span
-              *ngIf="!isHosted(vm.networkInterfaces[0].accessConfigs[0].natIP)"
-              (click)="
-                showHostModal(vm.networkInterfaces[0].accessConfigs[0].natIP)
-              "
-              class="font-medium text-blue-600 hover:underline cursor-pointer"
-            >
-              Host
-            </span>
-            <span
-              *ngIf="isHosted(vm.networkInterfaces[0].accessConfigs[0].natIP)"
-              (click)="
-                onUnlinkVm(vm.networkInterfaces[0].accessConfigs[0].natIP)
-              "
-              class="cursor-pointer"
-              >Unlink</span
-            >
-            <a
-              *ngIf="isHosted(vm.networkInterfaces[0].accessConfigs[0].natIP)"
-              [href]="getVmUrl(vm.networkInterfaces[0].accessConfigs[0].natIP)"
-              class="font-medium text-blue-600 hover:underline cursor-pointer"
-            >
-              Go to
-            </a>
+            <div *ngIf="vm.status === 'RUNNING'">
+              <span
+                *ngIf="
+                  !isHosted(vm.networkInterfaces[0].accessConfigs[0].natIP)
+                "
+                (click)="
+                  showHostModal(
+                    vm.networkInterfaces[0].accessConfigs[0].natIP,
+                    vm.name
+                  )
+                "
+                class="font-medium text-blue-600 hover:underline cursor-pointer"
+              >
+                Host
+              </span>
+              <span
+                *ngIf="isHosted(vm.networkInterfaces[0].accessConfigs[0].natIP)"
+                (click)="
+                  onUnlinkVm(vm.networkInterfaces[0].accessConfigs[0].natIP)
+                "
+                class="cursor-pointer"
+                >Unlink</span
+              >
+              <a
+                *ngIf="isHosted(vm.networkInterfaces[0].accessConfigs[0].natIP)"
+                [href]="
+                  getVmUrl(vm.networkInterfaces[0].accessConfigs[0].natIP)
+                "
+                class="font-medium text-blue-600 hover:underline cursor-pointer"
+              >
+                Go to
+              </a>
+            </div>
+            <div *ngIf="vm.status === 'TERMINATED'">
+              <span
+                (click)="onStartVm(vm.name)"
+                class="font-medium text-blue-600 hover:underline cursor-pointer"
+              >
+                Start
+              </span>
+            </div>
+            <div *ngIf="vm.status !== 'TERMINATED' && vm.status !== 'RUNNING'">
+              <span class="font-small text-gray-400"> - </span>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -326,10 +346,20 @@
           >
             .example.com
           </span>
+          <div class="relative max-w-sm">
+            <input
+              type="text"
+              #portInput
+              id="port-input"
+              class="block p-2.5 max-w-sm w-[80px] z-20 text-sm text-gray-900 bg-gray-50 rounded-lg ml-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Port"
+              required
+            />
+          </div>
         </form>
         <center>
           <button
-            (click)="onHostVm(subdomainInput.value)"
+            (click)="onHostVm(subdomainInput.value, portInput.value)"
             type="submit"
             class="m-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
