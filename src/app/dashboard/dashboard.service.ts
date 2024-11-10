@@ -7,6 +7,7 @@ import {
   GET_VIRTUEL_MACHINE_BY_IP,
   GET_VIRTUEL_MACHINES,
   HOST_VIRTUEL_MACHINE,
+  INSTALL_MONITORING,
   LIST_VIRTUEL_MACHINES,
   START_VIRTUEL_MACHINE,
   UNLINK_VIRTUEL_MACHINE,
@@ -24,6 +25,16 @@ export class DashboardService {
   ): Observable<any> {
     const body = { serviceAccountJson };
     const endpoint = APP_SERVER_URL + CONFIGURE_SERVICE_ACCOUNT;
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    });
+    return this.http.post<any>(endpoint, body, { headers });
+  }
+
+  installMonitoring(vmName: string, accessToken: string): Observable<any> {
+    const body = { vmName };
+    const endpoint = APP_SERVER_URL + INSTALL_MONITORING;
     const headers = new HttpHeaders({
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',

@@ -3,7 +3,6 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   NO_ERRORS_SCHEMA,
 } from '@angular/core';
-import { SideBarComponent } from '../side-bar/side-bar.component';
 import { DashboardService } from './dashboard.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -28,7 +27,7 @@ interface HostedVm {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [SideBarComponent, CommonModule, ExtractZonePipe],
+  imports: [CommonModule, ExtractZonePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -69,6 +68,7 @@ export class DashboardComponent {
         .getAllHostedVirtuelMachines(this.accessToken)
         .subscribe({
           next: (response) => {
+            console.log(response);
             this.hostedVms = response;
           },
           error: (error) => {
@@ -116,6 +116,27 @@ export class DashboardComponent {
           },
         });
     }
+  }
+
+  onInstallMonitoring(vmName: string) {
+    this.dashboardService
+      .installMonitoring(vmName, this.accessToken)
+      .subscribe({
+        next: (response) => {
+          this.message = response.message;
+          if (!response.message) {
+            this.message = 'vm is already monitored !';
+          }
+          // if (response.message === `VM ${vmName} is now being monitored.`) {
+          //   this.message = `VM ${vmName} is now being monitored.`;
+          // } else {
+          //   this.message = 'Something went wrong !';
+          // }
+        },
+        error: (error) => {
+          this.errorMessage = 'Vm is already monitored';
+        },
+      });
   }
 
   onStartVm(vmName: string) {
