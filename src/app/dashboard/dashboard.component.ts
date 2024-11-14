@@ -169,7 +169,7 @@ export class DashboardComponent {
           if (response.message === 'Subdomain assigned successfully') {
             this.hostedVms.push({
               hostedVm: this.ipToHost,
-              url: `http://${subdomain}.example.com`,
+              url: `http://${subdomain}.skanderjerbi.fun`,
             });
             this.host = false;
           }
