@@ -88,6 +88,7 @@ export class ParkingPageComponent {
       this.checkServerStatus();
     }, 5000);
   }
+  
   redirectToOriginalUrl() {
     this.dashboardService
       .getAllHostedVirtuelMachines(this.accessToken)

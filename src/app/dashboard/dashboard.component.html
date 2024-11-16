@@ -283,6 +283,14 @@
                 Start
               </span>
             </div>
+            <div *ngIf="vm.status === 'RUNNING'">
+              <span
+                (click)="onStopVm(vm.name)"
+                class="font-medium text-blue-600 hover:underline cursor-pointer"
+              >
+                Stop
+              </span>
+            </div>
             <div *ngIf="vm.status !== 'TERMINATED' && vm.status !== 'RUNNING'">
               <span class="font-small text-gray-400"> - </span>
             </div>

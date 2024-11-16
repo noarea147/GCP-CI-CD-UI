@@ -155,6 +155,22 @@ export class DashboardComponent {
       });
   }
 
+  onStopVm(vmName: string) {
+    this.dashboardService
+      .stopVirtuelMachine(vmName, this.accessToken)
+      .subscribe({
+        next: (response) => {
+          this.message = response.message;
+          console.log(this.message);
+        },
+        error: (error) => {
+          console.error('Login failed', error);
+          this.errorMessage =
+            'Login failed. Please check your credentials and try again.';
+        },
+      });
+  }
+
   onHostVm(subdomain: string, port: string) {
     this.dashboardService
       .hostVirtuelMachine(

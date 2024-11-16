@@ -10,6 +10,7 @@ import {
   INSTALL_MONITORING,
   LIST_VIRTUEL_MACHINES,
   START_VIRTUEL_MACHINE,
+  STOP_VIRTUEL_MACHINE,
   UNLINK_VIRTUEL_MACHINE,
 } from '../../shared/Apis';
 
@@ -85,6 +86,15 @@ export class DashboardService {
 
   startVirtuelMachine(vmName: string, accessToken: string): Observable<any> {
     const endpoint = APP_SERVER_URL + START_VIRTUEL_MACHINE;
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    });
+    return this.http.post<any>(endpoint, { vmName: vmName }, { headers });
+  }
+
+  stopVirtuelMachine(vmName: string, accessToken: string): Observable<any> {
+    const endpoint = APP_SERVER_URL + STOP_VIRTUEL_MACHINE;
     const headers = new HttpHeaders({
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
