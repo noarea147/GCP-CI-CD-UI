@@ -84,7 +84,7 @@ export class DashboardComponent {
           },
           error: (error) => {
             console.error('List failed', error);
-            this.errorMessage = 'List failed. Somthing went wrong !';
+            this.errorMessage = 'List failed. Service Account not configured !';
           },
         });
     }
